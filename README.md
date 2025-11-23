@@ -23,7 +23,7 @@ A **Model Context Protocol (MCP) server** for email management supporting multip
 ### 1. Clone & Install
 
 ```bash
-git clone https://github.com/augustolinhares/mcp-email-server.git
+git clone https://github.com/gufao/mcp-email-server.git
 cd mcp-email-server
 npm install
 ```
