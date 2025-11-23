@@ -1,0 +1,27 @@
+version: '3.8'
+
+services:
+  mcp-email-server:
+    build: .
+    image: mcp-email-server:latest
+    stdin_open: true
+    tty: true
+    volumes:
+      - ./credentials:/app/credentials:ro
+    env_file:
+      - .env
+    environment:
+      - NODE_ENV=production
+      - ACCOUNTS_PATH=/app/credentials/accounts.json
+      # Outlook secrets (from .env)
+      - OUTLOOK_CLIENT_ID=${OUTLOOK_CLIENT_ID}
+      - OUTLOOK_CLIENT_SECRET=${OUTLOOK_CLIENT_SECRET}
+      - OUTLOOK_TENANT_ID=${OUTLOOK_TENANT_ID:-common}
+      # IMAP secrets (from .env)
+      - IMAP_HOST=${IMAP_HOST}
+      - IMAP_USER=${IMAP_USER}
+      - IMAP_PASSWORD=${IMAP_PASSWORD}
+      - SMTP_HOST=${SMTP_HOST}
+      # Additional account passwords (add as needed)
+      - BUSINESS_EMAIL_PASSWORD=${BUSINESS_EMAIL_PASSWORD:-}
+      - PERSONAL_IMAP_PASSWORD=${PERSONAL_IMAP_PASSWORD:-}

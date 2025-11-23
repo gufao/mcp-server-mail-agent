@@ -1,0 +1,40 @@
+{
+  "accounts": [
+    {
+      "id": "work",
+      "name": "Work Gmail",
+      "provider": "gmail",
+      "default": true,
+      "config": {
+        "credentialsPath": "/app/credentials/work-gmail-credentials.json",
+        "tokenPath": "/app/credentials/work-gmail-token.json"
+      }
+    },
+    {
+      "id": "personal",
+      "name": "Personal Outlook",
+      "provider": "outlook",
+      "config": {
+        "clientId": "${OUTLOOK_CLIENT_ID}",
+        "clientSecret": "${OUTLOOK_CLIENT_SECRET}",
+        "tenantId": "${OUTLOOK_TENANT_ID}",
+        "tokenPath": "/app/credentials/personal-outlook-token.json"
+      }
+    },
+    {
+      "id": "business",
+      "name": "Business Email",
+      "provider": "imap",
+      "config": {
+        "host": "${IMAP_HOST}",
+        "port": 993,
+        "user": "${IMAP_USER}",
+        "password": "${IMAP_PASSWORD}",
+        "tls": true,
+        "smtpHost": "${SMTP_HOST}",
+        "smtpPort": 587,
+        "smtpSecure": false
+      }
+    }
+  ]
+}
