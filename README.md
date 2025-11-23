@@ -282,7 +282,7 @@ GPL-3.0 License - see [LICENSE](LICENSE) for details.
 
 ## Author
 
-**Augusto Linhares** - [18X Labs](https://github.com/augustolinhares)
+**Augusto Linhares** - [18X Labs](https://github.com/gufao)
 
 ---
 
