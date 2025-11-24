@@ -1,9 +1,28 @@
 {
-  "name": "mcp-email-server",
+  "name": "mcp-server-mail-agent",
   "version": "2.0.0",
   "description": "Multi-provider, Multi-account Email MCP Server",
   "type": "module",
   "main": "dist/index.js",
+  "author": "Augusto Linhares <augusto@linhares.sc>",
+  "license": "GPL-3.0",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/gufao/mcp-server-mail-agent.git"
+  },
+  "bugs": {
+    "url": "https://github.com/gufao/mcp-server-mail-agent/issues"
+  },
+  "homepage": "https://github.com/gufao/mcp-server-mail-agent#readme",
+  "keywords": [
+    "mcp",
+    "email",
+    "gmail",
+    "outlook",
+    "imap",
+    "claude",
+    "ai"
+  ],
   "scripts": {
     "build": "tsc",
     "start": "node dist/index.js",
