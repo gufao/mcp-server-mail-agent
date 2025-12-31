@@ -113,8 +113,15 @@ docker run --rm -v "$(pwd)/credentials:/app/credentials:ro" --env-file .env mcp-
 
 ### 5. Add to Docker MCP Gateway
 
-Add to `~/.docker/mcp/catalogs/custom.yaml`:
+#### Step 1: Create v3 Catalog File
+
+Create or update `~/.docker/mcp/catalogs/custom.yaml`:
+
 ```yaml
+version: 3
+name: custom
+displayName: custom
+registry:
   email:
     description: "Multi-account Email MCP Server supporting IMAP, Gmail, and Outlook"
     title: "Email Manager"
@@ -135,39 +142,66 @@ Add to `~/.docker/mcp/catalogs/custom.yaml`:
     prompts: 0
     resources: {}
     volumes:
-      - "/path/to/credentials:/app/credentials:ro"
+      - "/absolute/path/to/mcp-server-mail-agent/credentials:/app/credentials:ro"
     env:
       - name: ACCOUNTS_PATH
         value: "/app/credentials/accounts.json"
       - name: IMAP_HOST
-        value: "your-imap-server.com"
+        value: "{{email.imap_host}}"
       - name: IMAP_USER
-        value: "your-email@example.com"
+        value: "{{email.imap_user}}"
       - name: IMAP_PASSWORD
-        value: "your-app-password"
+        value: "{{email.imap_password}}"
       - name: SMTP_HOST
-        value: "your-smtp-server.com"
+        value: "{{email.smtp_host}}"
     metadata:
       category: productivity
-      tags:
-        - email
-        - imap
-        - gmail
-        - outlook
+      tags: [email, imap, gmail, outlook]
       license: GPL-3.0
       owner: local
 ```
 
-> **Important:** The `env` field must be an array of `{name, value}` objects. Docker MCP Gateway does NOT support `${VAR}` syntax for environment variables - you must provide the actual values directly in the catalog file.
+> **Important:**
+> - The catalog must be v3 format with `version`, `name`, `displayName`, and `registry` keys
+> - Use **template variables** like `{{email.imap_host}}` instead of hardcoding credentials
+> - Replace `/absolute/path/to/` with your actual project path
 
-Add to `~/.docker/mcp/registry.yaml`:
+#### Step 2: Add Credentials to Docker MCP Config
+
+Edit `~/.docker/mcp/config.yaml` to store your actual credentials:
+
 ```yaml
-registry:
-  email:
-    ref: ""
+email:
+  imap_host: imap.example.com
+  imap_user: user@example.com
+  imap_password: your-app-password-here
+  smtp_host: smtp.example.com
 ```
 
-Then run `/mcp` in Claude Code to reconnect, or restart Claude Desktop.
+> **Why this matters:** Hardcoding credentials directly in the catalog `env` values causes authentication failures in the Docker MCP Gateway, even though the same values work with `docker run`. Using template variables that reference `config.yaml` resolves this issue.
+
+#### Step 3: Import and Enable
+
+```bash
+# Import the catalog
+docker mcp catalog import ~/.docker/mcp/catalogs/custom.yaml
+# (the CLI will prompt for a name; enter "custom")
+
+# Enable the email server
+docker mcp server enable email
+
+# Verify tools are available
+docker mcp tools ls --format list | grep -E "list_accounts|fetch_unread_emails|send_email"
+
+# Test authentication
+docker mcp tools call list_accounts
+```
+
+Expected output should include your IMAP account with no authentication errors.
+
+#### Step 4: Use in Claude Code
+
+Run `/mcp` in Claude Code to reconnect, or restart Claude Desktop.
 
 ## Available Tools
 
@@ -273,8 +307,9 @@ npm run auth:outlook
 | "Authentication failed" | Verify credentials, use app password for IMAP |
 | "Failed to reconnect to MCP_DOCKER" | Restart Docker Desktop, check MCP Gateway is enabled |
 | "yaml: unmarshal errors" | Check custom.yaml format - `env` must be array of `{name, value}` objects |
-| "couldn't read secret" | Don't use `secrets` field; use `env` with direct values instead |
-| Empty accounts list | Ensure env vars have actual values in custom.yaml, not `${VAR}` syntax |
+| Docker MCP Gateway auth fails (AUTHENTICATIONFAILED) | Don't hardcode credentials in catalog. Use template vars `{{email.*}}` and put actual values in `~/.docker/mcp/config.yaml` |
+| Empty accounts list in Gateway | Ensure catalog uses v3 format with template variables, and `config.yaml` has actual credential values |
+| Gateway works with `docker run` but not MCP | Credentials hardcoded in catalog cause auth failures. Move them to `config.yaml` and use template variables |
 
 ## License
 
